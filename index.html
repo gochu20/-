@@ -1,0 +1,443 @@
+ <!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Брояч материали</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    background: #eeeeee;
+    margin: 0;
+    padding: 12px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 24px;
+}
+
+.category {
+    margin-top: 20px;
+}
+
+.category-title {
+    background: #333;
+    color: white;
+    padding: 12px;
+    border-radius: 10px 10px 0 0;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.row {
+    background: white;
+    padding: 12px;
+    margin: 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.name {
+    width: 100%;
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.total {
+    font-size: 18px;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+button {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #ddd;
+}
+
+input {
+    width: 65px;
+    font-size: 18px;
+    text-align: center;
+    padding: 7px 2px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+}
+
+.number {
+    font-size: 20px;
+    font-weight: bold;
+    min-width: 40px;
+    text-align: center;
+}
+
+.reset {
+    width: 100%;
+    background: #d33;
+    color: white;
+    padding: 15px;
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>БРОЯЧ МАТЕРИАЛИ</h1>
+
+<div id="items"></div>
+
+<button class="reset" onclick="resetAll()">
+НУЛИРАЙ ВСИЧКО
+</button>
+
+
+<script>
+
+
+const categories = [
+
+    {
+        name: "ТРЪБИ",
+        type: "meters",
+        items: [
+            "Тръба Ф200",
+            "Тръба Ф160",
+            "Тръба Ф110",
+            "Тръба Ф75"
+        ]
+    },
+
+    {
+        name: "ДЪГИ",
+        type: "pieces",
+        items: [
+            "Дъга Ф160",
+            "Дъга Ф110",
+            "Дъга Ф75"
+        ]
+    },
+
+    {
+        name: "ПРЕХОДИ",
+        type: "pieces",
+        items: [
+            "Преход 160/110",
+            "Преход 110/75",
+            "Преход 110/50"  
+        ]
+    },
+
+    {
+        name: "УТКИ",
+        type: "pieces",
+        items: [
+            "Утка Ф160",
+            "Утка Ф110",
+            "Утка Ф75",
+            "Утка Ф160/110",
+            "Утка Ф110/75",
+            "Утка Ф110/50"
+        ]
+    },
+
+    {
+        name: "СКОБИ",
+        type: "pieces",
+        items: [
+            "Скоба Ф160",
+            "Скоба Ф110"
+           
+        ]
+    },
+
+{
+        name: "ДРУГИ",
+        type: "pieces",
+        items: [
+            "Конзоли",
+            "Ревизия ф200",
+            "Ревизия ф160"
+           
+        ]
+    }
+
+
+];
+
+
+let materials = [];
+
+let types = [];
+
+categories.forEach(category => {
+
+    category.items.forEach(item => {
+
+        materials.push(item);
+        types.push(category.type);
+
+    });
+
+});
+
+
+let saved =
+    JSON.parse(localStorage.getItem("counts"))
+    || [];
+
+
+let counts = materials.map((_, i) => {
+
+    return Number(saved[i]) || 0;
+
+});
+
+
+function draw() {
+
+    const container =
+        document.getElementById("items");
+
+    container.innerHTML = "";
+
+    let index = 0;
+
+
+    categories.forEach(category => {
+
+        let categoryHTML = `
+
+        <div class="category">
+
+            <div class="category-title">
+                ${category.name}
+            </div>
+
+        `;
+
+
+        category.items.forEach(item => {
+
+            let currentIndex = index;
+
+            let count = counts[currentIndex];
+
+
+            /*
+            Форматиране на числото
+            */
+
+            let displayedCount;
+
+            if (types[currentIndex] === "meters") {
+
+                displayedCount =
+                    Number(count).toFixed(2);
+
+            } else {
+
+                displayedCount =
+                    Math.round(count);
+
+            }
+
+
+            /*
+            Стъпка на полето
+            */
+
+            let step =
+                types[currentIndex] === "meters"
+                ? "0.01"
+                : "1";
+
+
+            /*
+            Единица
+            */
+
+            let unit =
+                types[currentIndex] === "meters"
+                ? " м"
+                : " бр.";
+
+
+            categoryHTML += `
+
+            <div class="row">
+
+                <div class="name">
+                    ${item}
+                </div>
+
+                <button
+                    onclick="minusOne(${currentIndex})">
+                    −1
+                </button>
+
+                <input
+                    type="number"
+                    id="input${currentIndex}"
+                    value="1"
+                    min="0.01"
+                    step="${step}"
+                >
+
+                <button
+                    onclick="addCustom(${currentIndex})">
+                    +
+                </button>
+
+                <span class="number">
+                    ${displayedCount}
+                </span>
+
+                <span class="total">
+                    Общо: ${displayedCount}${unit}
+                </span>
+
+            </div>
+
+            `;
+
+            index++;
+
+        });
+
+
+        categoryHTML += `</div>`;
+
+        container.innerHTML += categoryHTML;
+
+    });
+
+
+    localStorage.setItem(
+        "counts",
+        JSON.stringify(counts)
+    );
+
+}
+
+
+function minusOne(index) {
+
+    if (types[index] === "meters") {
+
+        counts[index] =
+            Math.max(
+                0,
+                counts[index] - 1
+            );
+
+    } else {
+
+        counts[index] =
+            Math.max(
+                0,
+                Math.round(counts[index]) - 1
+            );
+
+    }
+
+    draw();
+
+}
+
+
+function addCustom(index) {
+
+    const input =
+        document.getElementById(
+            "input" + index
+        );
+
+
+    let amount =
+        parseFloat(
+            input.value.replace(",", ".")
+        );
+
+
+    if (
+        isNaN(amount) ||
+        amount <= 0
+    ) {
+
+        amount =
+            types[index] === "meters"
+            ? 0.01
+            : 1;
+
+    }
+
+
+    if (types[index] === "meters") {
+
+        /*
+        Максимум 2 знака след десетичната точка
+        */
+
+        amount =
+            Math.round(amount * 100) / 100;
+
+        counts[index] += amount;
+
+        counts[index] =
+            Math.round(
+                counts[index] * 100
+            ) / 100;
+
+    } else {
+
+        amount =
+            Math.round(amount);
+
+        counts[index] += amount;
+
+    }
+
+
+    draw();
+
+}
+
+
+function resetAll() {
+
+    if (
+        confirm(
+            "Сигурен ли си, че искаш да нулираш всичко?"
+        )
+    ) {
+
+        counts =
+            new Array(materials.length)
+            .fill(0);
+
+        draw();
+
+    }
+
+}
+
+
+draw();
+
+</script>
+
+</body>
+</html>
