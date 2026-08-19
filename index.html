@@ -1,20 +1,17 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="bg">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-<style>
-html, body {
-    touch-action: manipulation;
-}
-</style>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <title>Брояч материали</title>
 
 <style>
+
+html, body {
+    touch-action: manipulation;
+}
 
 body {
     font-family: Arial, sans-serif;
@@ -71,6 +68,7 @@ button {
     border: none;
     border-radius: 8px;
     background: #ddd;
+    touch-action: manipulation;
 }
 
 input {
@@ -80,6 +78,7 @@ input {
     padding: 7px 2px;
     border: 1px solid #aaa;
     border-radius: 8px;
+    touch-action: manipulation;
 }
 
 .number {
@@ -96,23 +95,12 @@ input {
     padding: 15px;
     margin-top: 20px;
     font-size: 18px;
+    touch-action: manipulation;
 }
 
 </style>
 </head>
-<script>
-let lastTap = 0;
 
-document.addEventListener('touchend', function(e) {
-  const now = Date.now();
-
-  if (now - lastTap < 300) {
-    e.preventDefault();
-  }
-
-  lastTap = now;
-}, { passive: false });
-</script>
 <body>
 
 <h1>БРОЯЧ МАТЕРИАЛИ</h1>
@@ -123,9 +111,7 @@ document.addEventListener('touchend', function(e) {
 НУЛИРАЙ ВСИЧКО
 </button>
 
-
 <script>
-
 
 const categories = [
 
@@ -156,7 +142,7 @@ const categories = [
         items: [
             "Преход 160/110",
             "Преход 110/75",
-            "Преход 110/50"  
+            "Преход 110/50"
         ]
     },
 
@@ -179,27 +165,22 @@ const categories = [
         items: [
             "Скоба Ф160",
             "Скоба Ф110"
-           
         ]
     },
 
-{
+    {
         name: "ДРУГИ",
         type: "pieces",
         items: [
             "Конзоли",
             "Ревизия ф200",
             "Ревизия ф160"
-           
         ]
     }
 
-
 ];
 
-
 let materials = [];
-
 let types = [];
 
 categories.forEach(category => {
@@ -213,18 +194,15 @@ categories.forEach(category => {
 
 });
 
-
 let saved =
     JSON.parse(localStorage.getItem("counts"))
     || [];
-
 
 let counts = materials.map((_, i) => {
 
     return Number(saved[i]) || 0;
 
 });
-
 
 function draw() {
 
@@ -234,7 +212,6 @@ function draw() {
     container.innerHTML = "";
 
     let index = 0;
-
 
     categories.forEach(category => {
 
@@ -248,17 +225,11 @@ function draw() {
 
         `;
 
-
         category.items.forEach(item => {
 
             let currentIndex = index;
 
             let count = counts[currentIndex];
-
-
-            /*
-            Форматиране на числото
-            */
 
             let displayedCount;
 
@@ -274,26 +245,15 @@ function draw() {
 
             }
 
-
-            /*
-            Стъпка на полето
-            */
-
             let step =
                 types[currentIndex] === "meters"
                 ? "0.01"
                 : "1";
 
-
-            /*
-            Единица
-            */
-
             let unit =
                 types[currentIndex] === "meters"
                 ? " м"
                 : " бр.";
-
 
             categoryHTML += `
 
@@ -337,13 +297,11 @@ function draw() {
 
         });
 
-
         categoryHTML += `</div>`;
 
         container.innerHTML += categoryHTML;
 
     });
-
 
     localStorage.setItem(
         "counts",
@@ -351,7 +309,6 @@ function draw() {
     );
 
 }
-
 
 function minusOne(index) {
 
@@ -377,7 +334,6 @@ function minusOne(index) {
 
 }
 
-
 function addCustom(index) {
 
     const input =
@@ -385,12 +341,10 @@ function addCustom(index) {
             "input" + index
         );
 
-
     let amount =
         parseFloat(
             input.value.replace(",", ".")
         );
-
 
     if (
         isNaN(amount) ||
@@ -404,12 +358,7 @@ function addCustom(index) {
 
     }
 
-
     if (types[index] === "meters") {
-
-        /*
-        Максимум 2 знака след десетичната точка
-        */
 
         amount =
             Math.round(amount * 100) / 100;
@@ -430,11 +379,9 @@ function addCustom(index) {
 
     }
 
-
     draw();
 
 }
-
 
 function resetAll() {
 
@@ -453,7 +400,6 @@ function resetAll() {
     }
 
 }
-
 
 draw();
 
