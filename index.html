@@ -315,15 +315,42 @@ function draw() {
 
 function minusOne(index) {
 
+    const input =
+        document.getElementById("input" + index);
+
+    let amount =
+        parseFloat(
+            input.value.replace(",", ".")
+        );
+
+    if (isNaN(amount) || amount <= 0) {
+        amount = 1;
+    }
+
     if (types[index] === "meters") {
 
+        amount = Math.round(amount * 100) / 100;
+
+        counts[index] -= amount;
+
         counts[index] =
-            Math.max(
-                0,
-                counts[index] - 1
-            );
+            Math.round(counts[index] * 100) / 100;
 
     } else {
+
+        amount = Math.round(amount);
+
+        counts[index] -= amount;
+    }
+
+    // Никога да не падне под 0
+    if (counts[index] < 0) {
+        counts[index] = 0;
+    }
+
+    draw();
+}
+     else {
 
         counts[index] =
             Math.max(
