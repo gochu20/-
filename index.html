@@ -343,26 +343,14 @@ function minusOne(index) {
         counts[index] -= amount;
     }
 
-    // Никога да не падне под 0
+    // Не позволява да стане отрицателно
     if (counts[index] < 0) {
         counts[index] = 0;
     }
 
     draw();
 }
-     else {
 
-        counts[index] =
-            Math.max(
-                0,
-                Math.round(counts[index]) - 1
-            );
-
-    }
-
-    draw();
-
-}
 
 function addCustom(index) {
 
